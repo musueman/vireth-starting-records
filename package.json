@@ -27,7 +27,7 @@
   "scripts": {
     "sync:content": "node scripts/sync-public.mjs",
     "dev": "vinext dev",
-    "build": "vinext build",
+    "build": "vinext build && node scripts/finalize-sites-build.mjs",
     "start": "wrangler dev --config dist/server/wrangler.json",
     "deploy": "vinext-cloudflare deploy --config dist/server/wrangler.json"
   }
