@@ -225,7 +225,7 @@
       const id = row.dataset.documentRow;
       button.textContent = id === documentId ? "읽는 중" : isRead(flow, id) ? "다시 읽기" : "읽기";
     });
-    if (shouldScroll) panel.scrollIntoView({ behavior: "smooth", block: "start" });
+    if (shouldScroll) readerDocument.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
   function toggleRead(flow, documentId) {

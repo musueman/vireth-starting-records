@@ -503,6 +503,7 @@ button {
 .reader-document {
   --paper-frame-x: 54px;
   --paper-frame-y: 68px;
+  scroll-margin-top: 132px;
   max-width: 900px;
   margin: 24px auto;
   padding: 10px 14px 18px;
@@ -761,8 +762,9 @@ button {
   .reader-document {
     --paper-frame-x: 24px;
     --paper-frame-y: 34px;
+    scroll-margin-top: 124px;
     margin: 12px 0;
-    padding: 8px 2px 16px;
+    padding: 24px 2px 16px;
     border-image-slice: 190 145 190 145 fill;
     font-size: 15px;
   }

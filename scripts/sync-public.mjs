@@ -23,7 +23,7 @@ for (const [source, destination] of files) {
 async function copyWebpTree(source, destination) {
   await mkdir(destination, { recursive: true });
   for (const entry of await readdir(source, { withFileTypes: true })) {
-    if (entry.name === "source-gpt") continue;
+    if (entry.name.startsWith("source-")) continue;
     const sourcePath = path.join(source, entry.name);
     const destinationPath = path.join(destination, entry.name);
     if (entry.isDirectory()) {
