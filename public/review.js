@@ -72,6 +72,27 @@
     return new Intl.NumberFormat("ko-KR").format(value);
   }
 
+  function placeIllustrations(article, illustrations) {
+    const paragraphs = Array.from(article.querySelectorAll(":scope > p"));
+    for (const illustration of illustrations || []) {
+      const figure = document.createElement("figure");
+      figure.className = "document-illustration";
+      figure.dataset.aspectRatio = illustration.aspectRatio || "3:2";
+
+      const image = document.createElement("img");
+      image.src = illustration.asset;
+      image.alt = illustration.alt || "";
+      image.loading = "lazy";
+      image.decoding = "async";
+      figure.append(image);
+
+      const paragraphIndex = Math.max(0, Number(illustration.afterParagraph || 1) - 1);
+      const anchor = paragraphs[Math.min(paragraphIndex, paragraphs.length - 1)];
+      if (anchor) anchor.insertAdjacentElement("afterend", figure);
+      else article.append(figure);
+    }
+  }
+
   function renderOverallProgress() {
     const flows = archive.startReading.readingFlows;
     const completeCount = flows.filter(flowIsComplete).length;
@@ -180,7 +201,11 @@
     const panel = document.getElementById("readerPanel");
     panel.hidden = false;
     document.getElementById("readerPosition").textContent = `${position + 1} / ${flow.documentIds.length} · ${sourceDocument.title}`;
-    document.getElementById("readerDocument").innerHTML = sourceDocument.html;
+    const readerDocument = document.getElementById("readerDocument");
+    readerDocument.innerHTML = sourceDocument.html;
+    readerDocument.dataset.frameId = sourceDocument.visual.frameId;
+    readerDocument.style.setProperty("--document-frame", `url("${sourceDocument.visual.frame}")`);
+    placeIllustrations(readerDocument, sourceDocument.visual.illustrations);
     const markButton = document.getElementById("markReadButton");
     markButton.textContent = isRead(flow, documentId) ? "읽음 취소" : "읽음으로 표시";
     document.getElementById("previousDocument").disabled = position === 0;

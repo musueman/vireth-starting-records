@@ -449,7 +449,7 @@ button {
 .reader-panel {
   margin-top: 18px;
   overflow: hidden;
-  background: #fff;
+  background: #c9ceca;
   border: 1px solid #bfc9c2;
   border-radius: var(--radius);
 }
@@ -501,12 +501,29 @@ button {
 }
 
 .reader-document {
-  max-width: 780px;
-  margin: 0 auto;
-  padding: 42px 34px 48px;
+  --paper-frame-x: 54px;
+  --paper-frame-y: 68px;
+  max-width: 900px;
+  margin: 24px auto;
+  padding: 10px 14px 18px;
+  background: #ece9df;
+  border: var(--paper-frame-y) solid transparent;
+  border-right-width: var(--paper-frame-x);
+  border-left-width: var(--paper-frame-x);
+  border-image-source: var(--document-frame);
+  border-image-slice: 170 130 170 130 fill;
+  border-image-width: 1;
+  box-shadow: 0 12px 26px rgba(26, 35, 31, 0.2);
   font-family: "Nanum Myeongjo", "Batang", serif;
   font-size: 16px;
   line-height: 1.9;
+}
+
+.reader-document[data-frame-id="field-notebook"] {
+  color: #151d19;
+  box-shadow:
+    inset 0 0 0 9999px rgba(246, 244, 230, 0.32),
+    0 12px 26px rgba(26, 35, 31, 0.2);
 }
 
 .reader-document h1,
@@ -549,6 +566,36 @@ button {
   margin: 32px 0;
   border: 0;
   border-top: 1px solid #cbd3cd;
+}
+
+.document-illustration {
+  position: relative;
+  margin: 28px auto 30px;
+  overflow: hidden;
+  background: #d9d4c7;
+  border: 1px solid rgba(57, 62, 56, 0.42);
+  box-shadow: 0 5px 10px rgba(45, 47, 42, 0.18);
+  clip-path: polygon(0.8% 1.4%, 99.2% 0, 100% 97.8%, 1.1% 100%, 0 54%);
+}
+
+.document-illustration[data-aspect-ratio="4:5"] {
+  width: min(72%, 500px);
+}
+
+.document-illustration img {
+  display: block;
+  width: 100%;
+  height: auto;
+  filter: saturate(0.88) contrast(0.96);
+}
+
+.document-illustration::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(105deg, rgba(255, 250, 232, 0.08), transparent 38%, rgba(31, 38, 34, 0.08));
+  mix-blend-mode: soft-light;
 }
 
 .reader-complete {
@@ -712,12 +759,22 @@ button {
   }
 
   .reader-document {
-    padding: 32px 20px 38px;
+    --paper-frame-x: 24px;
+    --paper-frame-y: 34px;
+    margin: 12px 0;
+    padding: 8px 2px 16px;
+    border-image-slice: 190 145 190 145 fill;
     font-size: 15px;
   }
 
   .reader-document h1 {
     font-size: 25px;
+  }
+
+  .document-illustration,
+  .document-illustration[data-aspect-ratio="4:5"] {
+    width: 100%;
+    margin: 24px auto 26px;
   }
 
   .reader-complete {
