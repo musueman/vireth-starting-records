@@ -1,4 +1,4 @@
-import { copyFile, mkdir, readFile, readdir } from "node:fs/promises";
+import { copyFile, mkdir, readFile, readdir, rm } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -34,6 +34,7 @@ async function copyWebpTree(source, destination) {
   }
 }
 
+await rm(publicAssets, { recursive: true, force: true });
 await copyWebpTree(sourceAssets, publicAssets);
 
 const publicData = await readFile(path.join(publicRoot, "public-reading-data.js"), "utf8");
