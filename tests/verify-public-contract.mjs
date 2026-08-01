@@ -88,6 +88,10 @@ function assertPngHasAlpha(filePath, label) {
     [4, 6].includes(bytes[25]),
     `${label} must include an alpha channel`,
   );
+  return {
+    width: bytes.readUInt32BE(16),
+    height: bytes.readUInt32BE(20),
+  };
 }
 
 const master = readJson(masterPath);
@@ -138,11 +142,43 @@ assertUnique(
   "reference document ids",
 );
 
+const expectedGuideAssignments = {
+  ren: [
+    "ini-com-01",
+    "ini-com-02",
+    "ini-com-05",
+    "ini-com-06",
+    "ini-com-07",
+    "ini-rol-03",
+    "ini-rol-05",
+  ],
+  duran: [
+    "ini-com-03",
+    "ini-com-04",
+    "ini-rol-01",
+    "ini-rol-02",
+    "ini-rol-04",
+    "ini-rol-06",
+    "ini-rol-07",
+  ],
+};
+
 for (const documentId of sourceDocumentIds) {
   const referenceDocument = referencesSource.documents.find(
     (document) => document.id === documentId,
   );
   assert.ok(referenceDocument, `references missing for ${documentId}`);
+  assert.ok(referenceDocument.guide, `guide missing for ${documentId}`);
+  assert.ok(
+    ["ren", "duran"].includes(referenceDocument.guide.id),
+    `${documentId} has an invalid guide id`,
+  );
+  assert.ok(referenceDocument.guide.name?.trim(), `${documentId} guide name missing`);
+  assert.ok(referenceDocument.guide.label?.trim(), `${documentId} guide label missing`);
+  assert.ok(
+    referenceDocument.guide.summary?.trim(),
+    `${documentId} guide summary missing`,
+  );
   assert.ok(
     referenceDocument.references.length >= 1 &&
       referenceDocument.references.length <= 5,
@@ -155,6 +191,17 @@ for (const documentId of sourceDocumentIds) {
       `${documentId} has an empty explanation`,
     );
   }
+}
+
+for (const [guideId, expectedDocumentIds] of Object.entries(expectedGuideAssignments)) {
+  const assignedDocumentIds = referencesSource.documents
+    .filter((document) => document.guide.id === guideId)
+    .map((document) => document.id);
+  assert.deepEqual(
+    assignedDocumentIds,
+    expectedDocumentIds,
+    `${guideId} guide assignment changed`,
+  );
 }
 
 const allTerms = referencesSource.documents.flatMap((document) =>
@@ -192,6 +239,17 @@ assert.equal(
   ).length,
   14,
 );
+assert.equal(
+  generated.documents.filter(
+    (document) =>
+      ["ren", "duran"].includes(document.guide?.id) &&
+      document.guide?.name?.trim() &&
+      document.guide?.label?.trim() &&
+      document.guide?.summary?.trim(),
+  ).length,
+  14,
+  "all public documents must include a complete guide",
+);
 
 for (const relativePath of [
   "public/reader.html",
@@ -217,18 +275,49 @@ const viewerHtml = fs.readFileSync(
   path.join(archiveRoot, "05_뷰어", "review.html"),
   "utf8",
 );
+const viewerJs = fs.readFileSync(
+  path.join(archiveRoot, "05_뷰어", "review.js"),
+  "utf8",
+);
+assert.doesNotMatch(
+  viewerHtml,
+  /assets\/archive-stage\/(?:ren|duran)-cutout\.png/,
+  "hero must not contain decorative Ren or Duran portraits",
+);
+for (const requiredHook of [
+  'id="readerGuide"',
+  'id="readerGuidePortrait"',
+  'id="readerGuideLabel"',
+  'id="readerGuideName"',
+  'id="readerGuideSummary"',
+]) {
+  assert.match(viewerJs, new RegExp(requiredHook), `missing guide hook ${requiredHook}`);
+}
+
+const guideDimensions = [];
 for (const character of ["ren", "duran"]) {
-  const relativeAsset = `assets/archive-stage/${character}-cutout.png`;
+  const relativeAsset = `assets/story-guides/${character}-ending-guide.png`;
   assert.match(
-    viewerHtml,
-    new RegExp(relativeAsset.replace(".", "\\.")),
-    `${character} must use the transparent cutout`,
+    viewerJs,
+    new RegExp(relativeAsset.replaceAll("/", "\\/").replace(".", "\\.")),
+    `${character} ending guide must be rendered by the reader`,
   );
-  assertPngHasAlpha(
-    path.join(archiveRoot, "05_뷰어", relativeAsset),
-    `${character} cutout`,
+  guideDimensions.push(
+    assertPngHasAlpha(
+      path.join(archiveRoot, "05_뷰어", relativeAsset),
+      `${character} ending guide`,
+    ),
   );
 }
+assert.deepEqual(
+  guideDimensions[0],
+  guideDimensions[1],
+  "guide portraits must use identical pixel dimensions",
+);
+assert.ok(
+  Math.abs(guideDimensions[0].width / guideDimensions[0].height - 4 / 5) < 0.001,
+  "guide portraits must use a 4:5 aspect ratio",
+);
 
 console.log(
   "Public contract verified: 8 flows, 14 documents, 30 illustrations, 14 reference sets.",

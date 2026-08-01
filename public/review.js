@@ -220,7 +220,20 @@
                   <h2 id="readerReferencesTitle">읽고 나서 참고</h2>
                 </div>
               </div>
-              <p class="references-intro">처음 만나는 시간, 돈, 행정 표현만 쉬운 말로 덧붙였습니다.</p>
+              <section id="readerGuide" class="reader-guide" aria-labelledby="readerGuideName">
+                <div class="reader-guide-portrait">
+                  <img id="readerGuidePortrait" src="" alt="">
+                </div>
+                <div class="reader-guide-copy">
+                  <p id="readerGuideLabel" class="reader-guide-label"></p>
+                  <h3 id="readerGuideName"></h3>
+                  <p id="readerGuideSummary" class="reader-guide-summary"></p>
+                </div>
+              </section>
+              <div class="references-intro">
+                <strong>낯선 말 찾아보기</strong>
+                <span>시간, 돈, 절차처럼 처음 만나는 표현만 쉬운 말로 덧붙였습니다.</span>
+              </div>
               <ul id="readerReferenceList"></ul>
             </aside>
             <div class="reader-complete">
@@ -250,6 +263,22 @@
   }
 
   function renderReferences(sourceDocument) {
+    const guide = sourceDocument.guide;
+    const guideAssets = {
+      ren: "assets/story-guides/ren-ending-guide.png",
+      duran: "assets/story-guides/duran-ending-guide.png"
+    };
+    const references = document.getElementById("readerReferences");
+    const guidePanel = document.getElementById("readerGuide");
+    const guidePortrait = document.getElementById("readerGuidePortrait");
+    references.dataset.guideId = guide.id;
+    guidePanel.dataset.guideId = guide.id;
+    guidePortrait.src = guideAssets[guide.id];
+    guidePortrait.alt = `${guide.name}, ${guide.label}`;
+    document.getElementById("readerGuideLabel").textContent = guide.label;
+    document.getElementById("readerGuideName").textContent = guide.name;
+    document.getElementById("readerGuideSummary").textContent = guide.summary;
+
     const referenceList = document.getElementById("readerReferenceList");
     referenceList.innerHTML = (sourceDocument.references || []).map((reference) => `
       <li>
