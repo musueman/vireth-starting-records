@@ -4,50 +4,74 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light">
-  <title>비레스 시작상황별 기록</title>
+  <title>비레스 5083 이야기 서고</title>
   <link rel="icon" href="data:,">
-  <link rel="stylesheet" href="review.css?v=20260731-7">
+  <link rel="stylesheet" href="review.css?v=20260801-1">
 </head>
 <body>
   <header class="review-topbar">
-    <div class="brand-link">
-      <span class="brand-kicker">ARCADIA 5083 · VIRETH</span>
-      <strong>시작상황별 기록</strong>
-    </div>
+    <a class="brand-link" href="#story-starts" aria-label="이야기 서고 시작 장면으로 이동">
+      <img src="assets/icons/library-big.svg" alt="">
+      <span>
+        <span class="brand-kicker">VIRETH 5083</span>
+        <strong>이야기 서고</strong>
+      </span>
+    </a>
     <div class="topbar-actions">
-      <a class="intro-link" href="https://musueman.github.io/arcadia-easy-explainers/">비레스 소개</a>
-      <span id="saveStatus" class="save-status" aria-live="polite">읽은 기록 확인 중</span>
+      <span id="saveStatus" class="save-status" aria-live="polite">읽은 이야기 확인 중</span>
+      <a class="start-link" href="#story-starts">
+        <img src="assets/icons/compass.svg" alt="">
+        <span>장면 고르기</span>
+      </a>
     </div>
   </header>
 
   <main class="review-shell">
-    <header class="review-intro">
-      <div>
-        <p class="eyebrow">VIRETH STARTING RECORDS</p>
-        <h1>시작상황을 골라 관련 기록을 읽어보세요.</h1>
-        <p>각 상황과 맞닿은 편지, 장부, 사건 기록을 읽는 동안 비레스 사람들의 생활과 판단 방식을 자연스럽게 알 수 있습니다.</p>
-      </div>
-      <div class="overall-progress" aria-label="전체 읽기 진행">
-        <span id="overallProgressLabel">0 / 7 상황 읽기 완료</span>
-        <div class="progress-track"><span id="overallProgressBar"></span></div>
-      </div>
-    </header>
-
-    <div class="review-layout">
-      <aside class="scenario-rail" aria-label="시작상황 선택">
-        <div class="rail-heading">
-          <h2>시작상황</h2>
-          <span>7종</span>
+    <section class="archive-stage" aria-labelledby="archiveTitle">
+      <img class="stage-background" src="assets/archive-stage/vireth-city-stage.webp" alt="비레스의 들판과 마을, 장터가 이어진 풍경">
+      <div class="stage-copy">
+        <p class="eyebrow">VIRETH 5083 STORY ARCHIVE</p>
+        <h1 id="archiveTitle">내 시작상황과 이어지는 이야기를 읽어보세요.</h1>
+        <p class="stage-description">편지, 장부, 공문과 사건 기록 속에서 비레스의 이름과 생활 방식을 알아갈 수 있습니다.</p>
+        <div class="overall-progress" aria-label="전체 읽기 진행">
+          <div class="progress-copy">
+            <img src="assets/icons/book-open.svg" alt="">
+            <span id="overallProgressLabel">0 / 8 장면 읽기 완료</span>
+          </div>
+          <div class="progress-track" aria-hidden="true"><span id="overallProgressBar"></span></div>
         </div>
-        <nav id="scenarioList" class="scenario-list"></nav>
-      </aside>
+      </div>
 
-      <section id="scenarioView" class="scenario-view" aria-live="polite"></section>
-    </div>
+      <div class="stage-guides" aria-label="이야기 서고 안내자">
+        <figure class="guide guide-ren">
+          <img src="assets/archive-stage/ren.webp" alt="비레스 이야기 서고 안내자 렌">
+          <figcaption><strong>렌</strong><span>이야기 길잡이</span></figcaption>
+        </figure>
+        <figure class="guide guide-duran">
+          <img src="assets/archive-stage/duran.webp" alt="비레스 이야기 서고 안내자 듀란">
+          <figcaption><strong>듀란</strong><span>이야기 길잡이</span></figcaption>
+        </figure>
+        <p class="guide-note">두 안내자는 기록 속 화자와 별개의 길잡이입니다.</p>
+      </div>
+    </section>
+
+    <section id="story-starts" class="story-starts" aria-labelledby="storyStartsTitle">
+      <div class="starts-heading">
+        <div>
+          <p class="section-kicker">CHOOSE YOUR OPENING</p>
+          <h2 id="storyStartsTitle">어떤 장면에서 이야기를 시작할까요?</h2>
+          <p>마음에 드는 장면을 고르면 그 상황과 맞닿은 네 편을 바로 읽을 수 있습니다.</p>
+        </div>
+        <span class="starts-count">8개의 시작</span>
+      </div>
+      <nav id="scenarioList" class="scenario-list" role="tablist" aria-label="이야기 시작 장면"></nav>
+    </section>
+
+    <section id="scenarioView" class="scenario-view" aria-live="polite"></section>
   </main>
 
-  <noscript>이 검토 페이지를 사용하려면 브라우저에서 JavaScript를 허용해야 합니다.</noscript>
-  <script src="public-reading-data.js?v=20260731-7"></script>
-  <script src="review.js?v=20260731-7"></script>
+  <noscript>이야기 서고를 사용하려면 브라우저에서 JavaScript를 허용해야 합니다.</noscript>
+  <script src="public-reading-data.js?v=20260801-1"></script>
+  <script src="review.js?v=20260801-1"></script>
 </body>
 </html>

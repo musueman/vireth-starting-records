@@ -20,22 +20,22 @@ for (const [source, destination] of files) {
   await copyFile(path.join(viewerRoot, source), path.join(publicRoot, destination));
 }
 
-async function copyWebpTree(source, destination) {
+async function copyPublicAssetTree(source, destination) {
   await mkdir(destination, { recursive: true });
   for (const entry of await readdir(source, { withFileTypes: true })) {
     if (entry.name.startsWith("source-")) continue;
     const sourcePath = path.join(source, entry.name);
     const destinationPath = path.join(destination, entry.name);
     if (entry.isDirectory()) {
-      await copyWebpTree(sourcePath, destinationPath);
-    } else if (entry.name.endsWith(".webp")) {
+      await copyPublicAssetTree(sourcePath, destinationPath);
+    } else if (/\.(webp|svg|txt)$/i.test(entry.name)) {
       await copyFile(sourcePath, destinationPath);
     }
   }
 }
 
 await rm(publicAssets, { recursive: true, force: true });
-await copyWebpTree(sourceAssets, publicAssets);
+await copyPublicAssetTree(sourceAssets, publicAssets);
 
 const publicData = await readFile(path.join(publicRoot, "public-reading-data.js"), "utf8");
 const forbidden = ["canonicalRoot", "00_관리", "04_검증", "searchText", '"path":'];

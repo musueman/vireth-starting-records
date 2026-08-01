@@ -23,6 +23,17 @@
       .replaceAll("'", "&#39;");
   }
 
+  function icon(name, className = "") {
+    return `<img class="icon${className ? ` ${className}` : ""}" src="assets/icons/${escapeHtml(name)}.svg" alt="" aria-hidden="true">`;
+  }
+
+  function flowTypeLabel(type) {
+    if (type === "기본 시작상황") return "자유 여행자로 시작";
+    if (type === "완성형 시작상황") return "역할을 골라 시작";
+    if (type === "확장 시작역할") return "생활 속 역할로 시작";
+    return type;
+  }
+
   function loadState() {
     try {
       const saved = JSON.parse(localStorage.getItem(storageKey));
@@ -62,7 +73,7 @@
     saveStatus.textContent = message;
     window.clearTimeout(saveTimer);
     saveTimer = window.setTimeout(() => {
-      saveStatus.textContent = "읽음 표시는 이 브라우저에만 저장됩니다";
+      saveStatus.textContent = "읽음 표시는 이 브라우저에 저장됩니다";
     }, 1600);
     renderScenarioList();
     renderOverallProgress();
@@ -96,7 +107,7 @@
   function renderOverallProgress() {
     const flows = archive.startReading.readingFlows;
     const completeCount = flows.filter(flowIsComplete).length;
-    overallProgressLabel.textContent = `${completeCount} / ${flows.length} 상황 읽기 완료`;
+    overallProgressLabel.textContent = `${completeCount} / ${flows.length} 장면 읽기 완료`;
     overallProgressBar.style.setProperty("--progress", `${(completeCount / flows.length) * 100}%`);
   }
 
@@ -104,18 +115,44 @@
     scenarioList.innerHTML = archive.startReading.readingFlows.map((flow, index) => {
       const readCount = flow.documentIds.filter((id) => isRead(flow, id)).length;
       const complete = readCount === flow.documentIds.length;
-      const started = readCount > 0;
+      const active = flow.id === activeFlowId;
+      const stateLabel = complete ? "네 편 모두 읽음" : readCount ? `${readCount}편 읽음` : "읽기 전";
       return `
-        <button class="scenario-button${flow.id === activeFlowId ? " is-active" : ""}" type="button" data-flow-id="${escapeHtml(flow.id)}">
-          <span class="scenario-number">${index + 1}</span>
-          <span class="scenario-name">${escapeHtml(flow.title)}</span>
-          <span class="scenario-state${complete || started ? "" : " is-empty"}" title="${complete ? "모두 읽음" : started ? `${readCount}편 읽음` : "읽기 전"}">${complete ? "✓" : started ? readCount : "·"}</span>
+        <button
+          id="flow-tab-${escapeHtml(flow.id)}"
+          class="scenario-button${active ? " is-active" : ""}"
+          type="button"
+          role="tab"
+          aria-selected="${active}"
+          aria-controls="scenarioView"
+          tabindex="${active ? "0" : "-1"}"
+          data-flow-id="${escapeHtml(flow.id)}"
+        >
+          <img class="scenario-image" src="${escapeHtml(flow.image)}" alt="">
+          <span class="scenario-overlay" aria-hidden="true"></span>
+          <span class="scenario-content">
+            <span class="scenario-meta">${String(index + 1).padStart(2, "0")} · ${escapeHtml(flowTypeLabel(flow.type))}</span>
+            <strong>${escapeHtml(flow.title)}</strong>
+            <span class="scenario-progress">${complete ? icon("circle-check-big") : icon("book-open")}${escapeHtml(stateLabel)}</span>
+          </span>
         </button>
       `;
     }).join("");
 
-    scenarioList.querySelectorAll("[data-flow-id]").forEach((button) => {
+    const buttons = Array.from(scenarioList.querySelectorAll("[data-flow-id]"));
+    buttons.forEach((button, index) => {
       button.addEventListener("click", () => openFlow(button.dataset.flowId, true));
+      button.addEventListener("keydown", (event) => {
+        let nextIndex = index;
+        if (event.key === "ArrowRight" || event.key === "ArrowDown") nextIndex = (index + 1) % buttons.length;
+        else if (event.key === "ArrowLeft" || event.key === "ArrowUp") nextIndex = (index - 1 + buttons.length) % buttons.length;
+        else if (event.key === "Home") nextIndex = 0;
+        else if (event.key === "End") nextIndex = buttons.length - 1;
+        else return;
+        event.preventDefault();
+        buttons[nextIndex].focus();
+        openFlow(buttons[nextIndex].dataset.flowId, true);
+      });
     });
   }
 
@@ -124,60 +161,79 @@
     const documentRows = flow.documentIds.map((id, index) => {
       const sourceDocument = documentById(id);
       const read = isRead(flow, id);
+      const isOpen = activeDocumentId === id;
+      const buttonLabel = isOpen ? "읽는 중" : read ? "다시 읽기" : "읽어보기";
       return `
-        <div class="document-row${read ? " is-read" : ""}${activeDocumentId === id ? " is-open" : ""}" data-document-row="${escapeHtml(id)}">
-          <span class="document-order">${index + 1}</span>
+        <article class="document-row${read ? " is-read" : ""}${isOpen ? " is-open" : ""}" data-document-row="${escapeHtml(id)}">
+          <span class="document-order">${String(index + 1).padStart(2, "0")}</span>
           <div class="document-info">
             <strong>${escapeHtml(sourceDocument.title)}</strong>
             <span>${escapeHtml(sourceDocument.form)} · 본문 ${formatLength(sourceDocument.characterCount)}자${read ? " · 읽음" : ""}</span>
           </div>
-          <button class="open-document" type="button" data-open-document="${escapeHtml(id)}">${activeDocumentId === id ? "읽는 중" : read ? "다시 읽기" : "읽기"}</button>
-        </div>
+          <button class="open-document" type="button" data-open-document="${escapeHtml(id)}">
+            ${icon(isOpen ? "book-open" : "eye")}
+            <span>${buttonLabel}</span>
+          </button>
+        </article>
       `;
     }).join("");
 
     scenarioView.innerHTML = `
-      <header class="scenario-header">
-        <img src="${escapeHtml(flow.image)}" alt="${escapeHtml(flow.imageAlt)}">
-        <div class="scenario-copy">
-          <p class="scenario-type">${escapeHtml(flow.type)}</p>
-          <h2>${escapeHtml(flow.title)}</h2>
-          <p class="scenario-role">${escapeHtml(flow.role)}</p>
-          <p class="scenario-problem">${escapeHtml(flow.problem)}</p>
-          <p class="scenario-invitation">${escapeHtml(flow.invitation)}</p>
-        </div>
-      </header>
-
-      <section class="section-band" aria-labelledby="documentSectionTitle">
-        <div class="section-heading">
-          <div>
-            <h3 id="documentSectionTitle">이 상황과 맞닿은 기록</h3>
-            <p>시작 시 열람 가능한 기록 가운데, 상황을 이해하는 데 도움이 될 네 편을 골랐습니다.</p>
+      <section class="scenario-detail" role="tabpanel" aria-labelledby="flow-tab-${escapeHtml(flow.id)}">
+        <header class="scenario-header">
+          <img src="${escapeHtml(flow.image)}" alt="${escapeHtml(flow.imageAlt)}">
+          <div class="scenario-copy">
+            <p class="scenario-type">${icon("map-pinned")}${escapeHtml(flowTypeLabel(flow.type))}</p>
+            <h2>${escapeHtml(flow.title)}</h2>
+            <p class="scenario-role">${escapeHtml(flow.role)}</p>
+            <p class="scenario-problem">${escapeHtml(flow.problem)}</p>
+            <p class="scenario-invitation">${escapeHtml(flow.invitation)}</p>
           </div>
-          <p>${readCount} / ${flow.documentIds.length} 읽음</p>
-        </div>
-        <div class="document-stack">${documentRows}</div>
+        </header>
 
-        <section id="readerPanel" class="reader-panel" hidden>
-          <div class="reader-toolbar">
-            <span id="readerPosition" class="reader-position"></span>
-            <div class="reader-actions">
-              <button id="previousDocument" type="button" aria-label="이전 기록" title="이전 기록">←</button>
-              <button id="nextDocument" type="button" aria-label="다음 기록" title="다음 기록">→</button>
-              <button id="closeDocument" type="button" aria-label="기록 닫기" title="기록 닫기">×</button>
+        <section class="document-section" aria-labelledby="documentSectionTitle">
+          <div class="section-heading">
+            <div>
+              <p class="section-kicker">FOLLOW THE RECORDS</p>
+              <h3 id="documentSectionTitle">이 장면에서 이어 읽기</h3>
+              <p>편지와 장부, 사건 기록을 차례로 열어 상황의 단서를 찾아보세요.</p>
             </div>
+            <p class="document-count">${readCount} / ${flow.documentIds.length} 읽음</p>
           </div>
-          <article id="readerDocument" class="reader-document"></article>
-          <div class="reader-complete">
-            <p>읽음 표시는 현재 브라우저에만 남습니다.</p>
-            <button id="markReadButton" class="primary-button" type="button">읽음으로 표시</button>
-          </div>
-        </section>
-      </section>
+          <div class="document-stack">${documentRows}</div>
 
-      <section class="closing-band">
-        <strong>네 편을 읽은 뒤</strong>
-        <p>인상 깊었던 대목이나 이해하기 어려웠던 부분은 이 페이지를 전해 준 사람에게 편하게 이야기해 주세요.</p>
+          <section id="readerPanel" class="reader-panel" hidden aria-label="기록 읽기">
+            <div class="reader-toolbar">
+              <span id="readerPosition" class="reader-position"></span>
+              <div class="reader-actions">
+                <button id="previousDocument" type="button" aria-label="이전 기록" title="이전 기록">${icon("arrow-left")}</button>
+                <button id="nextDocument" type="button" aria-label="다음 기록" title="다음 기록">${icon("arrow-right")}</button>
+                <button id="closeDocument" type="button" aria-label="기록 닫기" title="기록 닫기">${icon("x")}</button>
+              </div>
+            </div>
+            <article id="readerDocument" class="reader-document"></article>
+            <aside id="readerReferences" class="reader-references" aria-labelledby="readerReferencesTitle">
+              <div class="references-heading">
+                ${icon("sparkles")}
+                <div>
+                  <p>AFTER READING</p>
+                  <h2 id="readerReferencesTitle">읽고 나서 참고</h2>
+                </div>
+              </div>
+              <p class="references-intro">처음 만나는 시간, 돈, 행정 표현만 쉬운 말로 덧붙였습니다.</p>
+              <ul id="readerReferenceList"></ul>
+            </aside>
+            <div class="reader-complete">
+              <p>읽음 표시는 현재 브라우저에만 남습니다.</p>
+              <button id="markReadButton" class="primary-button" type="button"></button>
+            </div>
+          </section>
+        </section>
+
+        <footer class="closing-band">
+          <strong>네 편을 읽은 뒤</strong>
+          <p>어떤 기록이 지금의 선택에 가장 도움이 됐는지 떠올려 보세요. 장면을 바꾸면 다른 네 편으로 이어집니다.</p>
+        </footer>
       </section>
     `;
 
@@ -193,6 +249,21 @@
     });
   }
 
+  function renderReferences(sourceDocument) {
+    const referenceList = document.getElementById("readerReferenceList");
+    referenceList.innerHTML = (sourceDocument.references || []).map((reference) => `
+      <li>
+        <strong>${escapeHtml(reference.term)}</strong>
+        <p>${escapeHtml(reference.explanation)}</p>
+      </li>
+    `).join("");
+  }
+
+  function updateMarkButton(button, read) {
+    button.innerHTML = `${icon(read ? "rotate-ccw" : "check")}<span>${read ? "읽음 취소" : "읽음으로 표시"}</span>`;
+    button.setAttribute("aria-label", read ? "이 기록의 읽음 표시 취소" : "이 기록을 읽음으로 표시");
+  }
+
   function renderReader(flow, documentId, shouldScroll) {
     const sourceDocument = documentById(documentId);
     if (!sourceDocument) return;
@@ -206,8 +277,10 @@
     readerDocument.dataset.frameId = sourceDocument.visual.frameId;
     readerDocument.style.setProperty("--document-frame", `url("${sourceDocument.visual.frame}")`);
     placeIllustrations(readerDocument, sourceDocument.visual.illustrations);
+    renderReferences(sourceDocument);
+
     const markButton = document.getElementById("markReadButton");
-    markButton.textContent = isRead(flow, documentId) ? "읽음 취소" : "읽음으로 표시";
+    updateMarkButton(markButton, isRead(flow, documentId));
     document.getElementById("previousDocument").disabled = position === 0;
     document.getElementById("nextDocument").disabled = position === flow.documentIds.length - 1;
     document.getElementById("previousDocument").onclick = () => renderReader(flow, flow.documentIds[position - 1], true);
@@ -220,10 +293,12 @@
     markButton.onclick = () => toggleRead(flow, documentId);
 
     scenarioView.querySelectorAll("[data-document-row]").forEach((row) => {
-      row.classList.toggle("is-open", row.dataset.documentRow === documentId);
-      const button = row.querySelector(".open-document");
       const id = row.dataset.documentRow;
-      button.textContent = id === documentId ? "읽는 중" : isRead(flow, id) ? "다시 읽기" : "읽기";
+      const isOpen = id === documentId;
+      row.classList.toggle("is-open", isOpen);
+      const button = row.querySelector(".open-document");
+      const label = isOpen ? "읽는 중" : isRead(flow, id) ? "다시 읽기" : "읽어보기";
+      button.innerHTML = `${icon(isOpen ? "book-open" : "eye")}<span>${label}</span>`;
     });
     if (shouldScroll) readerDocument.scrollIntoView({ behavior: "smooth", block: "start" });
   }
@@ -250,23 +325,26 @@
     renderScenario(flow);
     renderOverallProgress();
     if (updateHash) history.replaceState(null, "", `#scenario=${encodeURIComponent(flow.id)}`);
-    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   function routeInitialFlow() {
     const match = window.location.hash.match(/^#scenario=(.+)$/);
     const requested = match ? decodeURIComponent(match[1]) : "";
     const flow = flowById(requested) || archive.startReading.readingFlows[0];
-    openFlow(flow.id, !match);
+    openFlow(flow.id, !window.location.hash);
   }
 
+  window.addEventListener("hashchange", () => {
+    if (/^#scenario=/.test(window.location.hash)) routeInitialFlow();
+  });
+
   if (!archive?.startReading?.readingFlows?.length) {
-    scenarioView.innerHTML = "<p>읽을 기록을 불러오지 못했습니다.</p>";
+    scenarioView.innerHTML = "<p>읽을 이야기를 불러오지 못했습니다.</p>";
     return;
   }
 
-  document.title = `비레스 시작상황별 기록 · ${archive.project.world}`;
-  saveStatus.textContent = "읽음 표시는 이 브라우저에만 저장됩니다";
+  document.title = archive.project.name;
+  saveStatus.textContent = "읽음 표시는 이 브라우저에 저장됩니다";
   renderOverallProgress();
   routeInitialFlow();
 })();

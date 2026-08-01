@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "비레스 시작상황별 기록",
-  description: "비레스의 일곱 시작상황과 관련 기록을 읽는 공개 서고",
+  title: "비레스 5083 이야기 서고",
+  description: "내 시작 장면과 이어지는 편지, 장부, 공문과 사건 기록을 읽는 비레스 5083 이야기 서고",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

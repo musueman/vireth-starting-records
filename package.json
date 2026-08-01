@@ -26,6 +26,8 @@
   "type": "module",
   "scripts": {
     "sync:content": "node scripts/sync-public.mjs",
+    "test": "npm run test:contract",
+    "test:contract": "node tests/verify-public-contract.mjs",
     "dev": "vinext dev",
     "build": "vinext build && node scripts/finalize-sites-build.mjs",
     "start": "wrangler dev --config dist/server/wrangler.json",
