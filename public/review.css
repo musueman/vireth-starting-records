@@ -154,7 +154,7 @@ img {
 
 .archive-stage {
   position: relative;
-  min-height: 360px;
+  min-height: 380px;
   display: grid;
   align-items: center;
   overflow: hidden;
@@ -195,8 +195,8 @@ img {
 .stage-copy {
   position: relative;
   z-index: 3;
-  width: min(58%, 770px);
-  padding: 32px 40px;
+  width: min(54%, 750px);
+  padding: 38px 42px;
 }
 
 .stage-copy h1,
@@ -221,15 +221,16 @@ img {
 
 .stage-description {
   max-width: 660px;
-  margin-top: 13px !important;
+  margin-top: 16px !important;
   color: #e4ece9;
   font-size: 15px;
   font-weight: 650;
+  line-height: 1.75;
 }
 
 .overall-progress {
   width: min(360px, 100%);
-  margin-top: 24px;
+  margin-top: 28px;
 }
 
 .progress-copy {
@@ -266,48 +267,55 @@ img {
 .stage-guides {
   position: absolute;
   z-index: 2;
-  inset: 18px 18px 0 auto;
-  width: min(42%, 540px);
-  height: calc(100% - 18px);
-  display: flex;
+  inset: 0 18px 0 auto;
+  width: min(43%, 560px);
+  height: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: auto minmax(0, 1fr);
   align-items: end;
-  justify-content: end;
-  gap: 8px;
+  gap: 10px 14px;
+  padding: 18px 0 0;
+  pointer-events: none;
 }
 
 .guide {
   position: relative;
-  width: min(45%, 205px);
-  height: 300px;
+  grid-row: 2;
+  min-width: 0;
+  height: 100%;
   margin: 0;
-  overflow: hidden;
-  background: #f8f6ef;
-  border: 1px solid rgba(255, 255, 255, 0.75);
-  box-shadow: 0 12px 28px rgba(5, 10, 11, 0.28);
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  gap: 8px;
+  overflow: visible;
 }
 
 .guide-ren {
-  height: 270px;
+  padding-top: 28px;
 }
 
 .guide img {
   width: 100%;
   height: 100%;
   display: block;
-  object-fit: cover;
-  object-position: 50% 16%;
+  align-self: end;
+  object-fit: contain;
+  object-position: center bottom;
+  filter: drop-shadow(0 14px 15px rgba(3, 8, 10, 0.52));
 }
 
 .guide figcaption {
-  position: absolute;
-  inset: auto 0 0;
   display: flex;
   align-items: baseline;
   justify-content: space-between;
   gap: 8px;
-  padding: 8px 10px;
+  min-height: 38px;
+  padding: 7px 10px;
   color: #ffffff;
-  background: rgba(13, 20, 22, 0.9);
+  background: rgba(13, 20, 22, 0.86);
+  border-top: 2px solid rgba(210, 162, 61, 0.9);
+  backdrop-filter: blur(5px);
 }
 
 .guide figcaption strong {
@@ -321,24 +329,22 @@ img {
 }
 
 .guide-note {
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: auto;
-  width: auto;
-  max-width: 100%;
+  grid-column: 1 / -1;
+  grid-row: 1;
+  justify-self: end;
   margin: 0;
-  padding: 4px 8px;
+  padding: 6px 9px;
   color: #dce4e1;
   background: rgba(10, 15, 17, 0.78);
-  font-size: 9px;
+  font-size: 10px;
+  line-height: 1.45;
   text-align: right;
 }
 
 .story-starts {
   scroll-margin-top: 74px;
-  margin-top: 18px;
-  padding: 22px 0 4px;
+  margin-top: 24px;
+  padding: 24px 0 6px;
 }
 
 .starts-heading {
@@ -365,9 +371,10 @@ img {
 }
 
 .starts-heading > div > p:last-child {
-  margin-top: 5px;
+  margin-top: 9px;
   color: var(--ink-muted);
   font-size: 13px;
+  line-height: 1.65;
 }
 
 .starts-count {
@@ -1024,15 +1031,12 @@ img {
   }
 
   .stage-copy {
-    width: 64%;
+    width: 56%;
+    padding-inline: 32px 24px;
   }
 
   .stage-guides {
-    width: 40%;
-  }
-
-  .guide {
-    width: 48%;
+    width: 42%;
   }
 
   .document-stack {
@@ -1083,8 +1087,10 @@ img {
   }
 
   .archive-stage {
-    min-height: 500px;
-    align-items: start;
+    min-height: 520px;
+    display: flex;
+    align-items: stretch;
+    flex-direction: column;
   }
 
   .stage-background {
@@ -1093,8 +1099,8 @@ img {
 
   .archive-stage::before {
     width: 100%;
-    height: 66%;
-    background: linear-gradient(180deg, rgba(8, 13, 15, 0.97) 0%, rgba(8, 13, 15, 0.86) 72%, transparent 100%);
+    height: 70%;
+    background: linear-gradient(180deg, rgba(8, 13, 15, 0.97) 0%, rgba(8, 13, 15, 0.88) 66%, transparent 100%);
   }
 
   .archive-stage::after {
@@ -1103,7 +1109,8 @@ img {
 
   .stage-copy {
     width: 100%;
-    padding: 22px 18px;
+    flex: 0 0 auto;
+    padding: 22px 18px 14px;
   }
 
   .stage-copy h1 {
@@ -1122,25 +1129,31 @@ img {
   }
 
   .stage-guides {
-    inset: auto 8px 0;
-    width: calc(100% - 16px);
-    height: 220px;
-    justify-content: center;
-    gap: 6px;
+    position: relative;
+    inset: auto;
+    width: 100%;
+    height: 236px;
+    flex: 0 0 236px;
+    margin-top: auto;
+    gap: 7px 12px;
+    padding: 0 14px 8px;
   }
 
   .guide,
   .guide-ren {
-    width: min(42%, 155px);
-    height: 215px;
+    width: auto;
+    height: 100%;
+    padding-top: 0;
   }
 
   .guide img {
-    object-position: 50% 13%;
+    min-height: 0;
+    object-position: center bottom;
   }
 
   .guide figcaption {
-    padding: 6px 8px;
+    min-height: 32px;
+    padding: 5px 8px;
   }
 
   .guide figcaption strong {
@@ -1148,19 +1161,20 @@ img {
   }
 
   .guide figcaption span {
-    font-size: 8px;
+    font-size: 9px;
   }
 
   .guide-note {
-    top: -25px;
-    bottom: auto;
-    font-size: 8px;
+    justify-self: center;
+    padding: 4px 7px;
+    font-size: 9px;
+    text-align: center;
   }
 
   .story-starts {
     scroll-margin-top: 64px;
-    margin-top: 10px;
-    padding-top: 15px;
+    margin-top: 18px;
+    padding-top: 18px;
   }
 
   .starts-heading {
@@ -1170,10 +1184,13 @@ img {
 
   .starts-heading h2 {
     font-size: 23px;
+    line-height: 1.35;
   }
 
   .starts-heading > div > p:last-child {
+    margin-top: 8px;
     font-size: 12px;
+    line-height: 1.7;
   }
 
   .starts-count {
@@ -1320,9 +1337,12 @@ img {
     font-size: 25px;
   }
 
-  .guide,
-  .guide-ren {
-    width: 44%;
+  .stage-copy {
+    padding-inline: 16px;
+  }
+
+  .stage-guides {
+    padding-inline: 10px;
   }
 
   .scenario-button {

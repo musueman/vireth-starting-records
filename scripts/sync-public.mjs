@@ -28,7 +28,7 @@ async function copyPublicAssetTree(source, destination) {
     const destinationPath = path.join(destination, entry.name);
     if (entry.isDirectory()) {
       await copyPublicAssetTree(sourcePath, destinationPath);
-    } else if (/\.(webp|svg|txt)$/i.test(entry.name)) {
+    } else if (/\.(png|webp|svg|txt)$/i.test(entry.name)) {
       await copyFile(sourcePath, destinationPath);
     }
   }

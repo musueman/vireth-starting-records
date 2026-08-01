@@ -41,8 +41,8 @@
 - 수정: `../90_도구/build_viewer.mjs`
 - 생성: `../05_뷰어/assets/start-situations/gate-arrival.webp`
 - 생성: `../05_뷰어/assets/archive-stage/vireth-city-stage.webp`
-- 생성: `../05_뷰어/assets/archive-stage/ren.webp`
-- 생성: `../05_뷰어/assets/archive-stage/duran.webp`
+- 생성: `../05_뷰어/assets/archive-stage/ren-cutout.png`
+- 생성: `../05_뷰어/assets/archive-stage/duran-cutout.png`
 
 **순서**
 

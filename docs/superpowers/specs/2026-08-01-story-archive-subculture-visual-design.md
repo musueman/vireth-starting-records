@@ -107,10 +107,10 @@
 |---|---|---|
 | 기본 시작 | `start-city-gate-day-v1.webp`의 글자 없는 낮 성문 구간 | `assets/start-situations/gate-arrival.webp` |
 | 첫 화면 세계 장면 | 기존 비레스 도시 원본 | `assets/archive-stage/vireth-city-stage.webp` |
-| 렌 | 승인 개별 원본 `02_02_side_cloak_face_close_00001_.png` | `assets/archive-stage/ren.webp` |
-| 듀란 | 승인 개별 원본 `31_snow_white_hair_expr_comp_8_02_guarded_three_quarter_00001_.png` | `assets/archive-stage/duran.webp` |
+| 렌 | 승인 개별 원본 `02_02_side_cloak_face_close_00001_.png` | `assets/archive-stage/ren-cutout.png` |
+| 듀란 | 승인 개별 원본 `31_snow_white_hair_expr_comp_8_02_guarded_three_quarter_00001_.png` | `assets/archive-stage/duran-cutout.png` |
 
-파생은 리사이즈, 무손상 원본 보존, WebP 변환만 수행한다. 인물의 복장, 얼굴과 색을 편집하지 않는다.
+파생은 배경 제거, 리사이즈와 무손상 원본 보존만 수행한다. 인물의 복장, 얼굴과 색은 편집하지 않는다. 상단에서는 투명 인물을 텍스트와 분리된 전용 영역에 배치하고, 모바일에서는 해당 영역을 문서 흐름 안에 두어 텍스트를 침범하지 않게 한다.
 
 ## 6. 색과 형태
 

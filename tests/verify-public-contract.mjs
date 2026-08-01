@@ -78,6 +78,18 @@ function assertUnique(values, label) {
   );
 }
 
+function assertPngHasAlpha(filePath, label) {
+  const bytes = fs.readFileSync(filePath);
+  const pngSignature = Buffer.from([
+    0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a,
+  ]);
+  assert.ok(bytes.subarray(0, 8).equals(pngSignature), `${label} must be PNG`);
+  assert.ok(
+    [4, 6].includes(bytes[25]),
+    `${label} must include an alpha channel`,
+  );
+}
+
 const master = readJson(masterPath);
 const visualManifest = readJson(visualManifestPath);
 const referencesSource = readJson(referencesPath);
@@ -199,6 +211,23 @@ for (const relativePath of [
 for (const flow of generated.startReading.readingFlows) {
   const assetPath = path.join(archiveRoot, "05_뷰어", flow.image);
   assert.ok(fs.existsSync(assetPath), `missing start image ${flow.image}`);
+}
+
+const viewerHtml = fs.readFileSync(
+  path.join(archiveRoot, "05_뷰어", "review.html"),
+  "utf8",
+);
+for (const character of ["ren", "duran"]) {
+  const relativeAsset = `assets/archive-stage/${character}-cutout.png`;
+  assert.match(
+    viewerHtml,
+    new RegExp(relativeAsset.replace(".", "\\.")),
+    `${character} must use the transparent cutout`,
+  );
+  assertPngHasAlpha(
+    path.join(archiveRoot, "05_뷰어", relativeAsset),
+    `${character} cutout`,
+  );
 }
 
 console.log(
