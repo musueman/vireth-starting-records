@@ -121,6 +121,7 @@ img {
   white-space: nowrap;
 }
 
+.guide-return-link,
 .start-link {
   min-height: 36px;
   display: inline-flex;
@@ -136,10 +137,22 @@ img {
   text-decoration: none;
 }
 
+.guide-return-link {
+  color: #f3e7c1;
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(243, 231, 193, 0.45);
+}
+
+.guide-return-link:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.15);
+}
+
 .start-link:hover {
   background: var(--red-dark);
 }
 
+.guide-return-link img,
 .start-link img {
   width: 17px;
   height: 17px;
@@ -1129,6 +1142,7 @@ img {
     display: none;
   }
 
+  .guide-return-link,
   .start-link {
     min-height: 34px;
     padding: 5px 8px;
@@ -1379,6 +1393,10 @@ img {
 }
 
 @media (max-width: 380px) {
+  .guide-return-link span {
+    display: none;
+  }
+
   .stage-copy h1 {
     font-size: 25px;
   }

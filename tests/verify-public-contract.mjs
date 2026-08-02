@@ -259,8 +259,12 @@ for (const relativePath of [
   "app/layout.tsx",
 ]) {
   const contents = fs.readFileSync(path.join(repoRoot, relativePath), "utf8");
+  const authoredContents = contents.replaceAll(
+    "https://musueman.github.io/arcadia-easy-explainers/",
+    "",
+  );
   assert.doesNotMatch(
-    contents,
+    authoredContents,
     /Arcadia|ARCADIA|arcadia|아르카디아/,
     `forbidden public name found in ${relativePath}`,
   );
@@ -273,6 +277,10 @@ for (const flow of generated.startReading.readingFlows) {
 
 const viewerHtml = fs.readFileSync(
   path.join(archiveRoot, "05_뷰어", "review.html"),
+  "utf8",
+);
+const publicReaderHtml = fs.readFileSync(
+  path.join(repoRoot, "public", "reader.html"),
   "utf8",
 );
 const viewerJs = fs.readFileSync(
@@ -288,6 +296,21 @@ assert.doesNotMatch(
   /assets\/archive-stage\/(?:ren|duran)-cutout\.png/,
   "hero must not contain decorative Ren or Duran portraits",
 );
+for (const [label, html] of [
+  ["canonical viewer", viewerHtml],
+  ["public reader", publicReaderHtml],
+]) {
+  assert.match(
+    html,
+    /class="guide-return-link"[^>]*href="https:\/\/musueman\.github\.io\/arcadia-easy-explainers\/"/,
+    `${label} must link back to the Vireth travel guide`,
+  );
+  assert.match(
+    html,
+    />\s*여행 안내로 돌아가기\s*</,
+    `${label} must name the travel guide return action`,
+  );
+}
 for (const requiredCarouselHook of [
   'id="scenarioPrevious"',
   'id="scenarioNext"',
