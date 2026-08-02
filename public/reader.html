@@ -6,7 +6,7 @@
   <meta name="color-scheme" content="light">
   <title>비레스 5083 이야기 서고</title>
   <link rel="icon" href="data:,">
-  <link rel="stylesheet" href="review.css?v=20260802-2">
+  <link rel="stylesheet" href="review.css?v=20260802-3">
 </head>
 <body>
   <header class="review-topbar">
@@ -53,14 +53,22 @@
         </div>
         <span class="starts-count">8개의 시작</span>
       </div>
-      <nav id="scenarioList" class="scenario-list" role="tablist" aria-label="이야기 시작 장면"></nav>
+      <div class="scenario-carousel">
+        <button id="scenarioPrevious" class="scenario-carousel-control" type="button" aria-label="이전 시작 장면" title="이전 시작 장면">
+          <img src="assets/icons/arrow-left.svg" alt="">
+        </button>
+        <nav id="scenarioList" class="scenario-list" role="tablist" aria-label="이야기 시작 장면"></nav>
+        <button id="scenarioNext" class="scenario-carousel-control" type="button" aria-label="다음 시작 장면" title="다음 시작 장면">
+          <img src="assets/icons/arrow-right.svg" alt="">
+        </button>
+      </div>
     </section>
 
     <section id="scenarioView" class="scenario-view" aria-live="polite"></section>
   </main>
 
   <noscript>이야기 서고를 사용하려면 브라우저에서 JavaScript를 허용해야 합니다.</noscript>
-  <script src="public-reading-data.js?v=20260802-2"></script>
-  <script src="review.js?v=20260802-2"></script>
+  <script src="public-reading-data.js?v=20260802-3"></script>
+  <script src="review.js?v=20260802-3"></script>
 </body>
 </html>

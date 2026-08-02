@@ -310,15 +310,69 @@ img {
   font-weight: 850;
 }
 
-.scenario-list {
+.scenario-carousel {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: 40px minmax(0, 1fr) 40px;
+  align-items: stretch;
+  gap: 8px;
+}
+
+.scenario-carousel-control {
+  display: grid;
+  place-items: center;
+  min-width: 40px;
+  padding: 0;
+  color: var(--teal);
+  background: #f7faf8;
+  border: 1px solid #b5c3bf;
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+.scenario-carousel-control:hover {
+  color: #ffffff;
+  background: var(--teal);
+  border-color: var(--teal);
+}
+
+.scenario-carousel-control:focus-visible {
+  outline: 3px solid var(--gold);
+  outline-offset: 2px;
+}
+
+.scenario-carousel-control:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.scenario-carousel-control:disabled:hover {
+  color: var(--teal);
+  background: #f7faf8;
+  border-color: #b5c3bf;
+}
+
+.scenario-carousel-control img {
+  width: 19px;
+  height: 19px;
+}
+
+.scenario-list {
+  min-width: 0;
+  display: flex;
   gap: 10px;
+  overflow-x: auto;
+  padding: 4px;
+  scroll-padding-inline: 4px;
+  scroll-snap-type: x mandatory;
+  overscroll-behavior-inline: contain;
+  scrollbar-color: #7d9b98 #dfe7e3;
+  scrollbar-width: thin;
 }
 
 .scenario-button {
   position: relative;
   isolation: isolate;
+  flex: 0 0 clamp(238px, 24vw, 290px);
   min-width: 0;
   min-height: 130px;
   display: flex;
@@ -331,6 +385,7 @@ img {
   border: 2px solid transparent;
   border-radius: var(--radius);
   cursor: pointer;
+  scroll-snap-align: start;
 }
 
 .scenario-image {
@@ -396,6 +451,7 @@ img {
 .scenario-view {
   min-width: 0;
   margin-top: 22px;
+  scroll-margin-top: 76px;
 }
 
 .scenario-detail {
@@ -1031,10 +1087,6 @@ img {
 }
 
 @media (max-width: 1080px) {
-  .scenario-list {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
   .stage-copy {
     width: 56%;
     padding-inline: 32px 24px;
@@ -1155,19 +1207,23 @@ img {
     display: none;
   }
 
+  .scenario-carousel {
+    display: block;
+  }
+
+  .scenario-carousel-control {
+    display: none;
+  }
+
   .scenario-list {
-    display: flex;
     gap: 8px;
-    overflow-x: auto;
     padding: 3px 4px 8px;
-    scroll-snap-type: x proximity;
-    scrollbar-width: thin;
+    scroll-padding-inline: 4px;
   }
 
   .scenario-button {
-    flex: 0 0 232px;
+    flex-basis: min(82vw, 300px);
     min-height: 126px;
-    scroll-snap-align: start;
   }
 
   .scenario-button.is-active {
@@ -1176,6 +1232,7 @@ img {
 
   .scenario-view {
     margin-top: 14px;
+    scroll-margin-top: 70px;
   }
 
   .scenario-header {

@@ -5,9 +5,13 @@
   const storageKey = "vireth-start-reading-progress-v1";
   const scenarioList = document.getElementById("scenarioList");
   const scenarioView = document.getElementById("scenarioView");
+  const scenarioPrevious = document.getElementById("scenarioPrevious");
+  const scenarioNext = document.getElementById("scenarioNext");
   const saveStatus = document.getElementById("saveStatus");
   const overallProgressLabel = document.getElementById("overallProgressLabel");
   const overallProgressBar = document.getElementById("overallProgressBar");
+  const mobileScenarioQuery = window.matchMedia("(max-width: 760px)");
+  const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
 
   let activeFlowId = "";
   let activeDocumentId = "";
@@ -111,6 +115,54 @@
     overallProgressBar.style.setProperty("--progress", `${(completeCount / flows.length) * 100}%`);
   }
 
+  function scrollBehavior() {
+    return reducedMotionQuery.matches ? "auto" : "smooth";
+  }
+
+  function updateScenarioControls() {
+    const maximumScroll = Math.max(0, scenarioList.scrollWidth - scenarioList.clientWidth);
+    scenarioPrevious.disabled = scenarioList.scrollLeft <= 2;
+    scenarioNext.disabled = scenarioList.scrollLeft >= maximumScroll - 2;
+  }
+
+  function scrollActiveScenarioIntoView() {
+    window.requestAnimationFrame(() => {
+      const activeButton = scenarioList.querySelector(".scenario-button.is-active");
+      if (!activeButton) return;
+      const listBounds = scenarioList.getBoundingClientRect();
+      const buttonBounds = activeButton.getBoundingClientRect();
+      const centeredLeft = scenarioList.scrollLeft
+        + buttonBounds.left
+        - listBounds.left
+        - (listBounds.width - buttonBounds.width) / 2;
+      scenarioList.scrollTo({
+        left: Math.max(0, centeredLeft),
+        behavior: scrollBehavior(),
+      });
+      updateScenarioControls();
+    });
+  }
+
+  function revealScenarioDetail() {
+    if (!mobileScenarioQuery.matches) return;
+    window.requestAnimationFrame(() => {
+      scenarioView.scrollIntoView({
+        behavior: scrollBehavior(),
+        block: "start",
+      });
+    });
+  }
+
+  function scrollScenarioCarousel(direction) {
+    const firstButton = scenarioList.querySelector(".scenario-button");
+    if (!firstButton) return;
+    const gap = Number.parseFloat(window.getComputedStyle(scenarioList).columnGap) || 0;
+    scenarioList.scrollBy({
+      left: direction * (firstButton.getBoundingClientRect().width + gap),
+      behavior: scrollBehavior(),
+    });
+  }
+
   function renderScenarioList() {
     scenarioList.innerHTML = archive.startReading.readingFlows.map((flow, index) => {
       const readCount = flow.documentIds.filter((id) => isRead(flow, id)).length;
@@ -141,7 +193,7 @@
 
     const buttons = Array.from(scenarioList.querySelectorAll("[data-flow-id]"));
     buttons.forEach((button, index) => {
-      button.addEventListener("click", () => openFlow(button.dataset.flowId, true));
+      button.addEventListener("click", () => openFlow(button.dataset.flowId, true, true));
       button.addEventListener("keydown", (event) => {
         let nextIndex = index;
         if (event.key === "ArrowRight" || event.key === "ArrowDown") nextIndex = (index + 1) % buttons.length;
@@ -151,7 +203,7 @@
         else return;
         event.preventDefault();
         buttons[nextIndex].focus();
-        openFlow(buttons[nextIndex].dataset.flowId, true);
+        openFlow(buttons[nextIndex].dataset.flowId, true, false);
       });
     });
   }
@@ -345,7 +397,7 @@
     renderReader(flow, documentId, false);
   }
 
-  function openFlow(flowId, updateHash) {
+  function openFlow(flowId, updateHash, revealDetail = false) {
     const flow = flowById(flowId);
     if (!flow) return;
     activeFlowId = flow.id;
@@ -354,6 +406,8 @@
     renderScenario(flow);
     renderOverallProgress();
     if (updateHash) history.replaceState(null, "", `#scenario=${encodeURIComponent(flow.id)}`);
+    scrollActiveScenarioIntoView();
+    if (revealDetail) revealScenarioDetail();
   }
 
   function routeInitialFlow() {
@@ -366,6 +420,10 @@
   window.addEventListener("hashchange", () => {
     if (/^#scenario=/.test(window.location.hash)) routeInitialFlow();
   });
+  scenarioPrevious.addEventListener("click", () => scrollScenarioCarousel(-1));
+  scenarioNext.addEventListener("click", () => scrollScenarioCarousel(1));
+  scenarioList.addEventListener("scroll", updateScenarioControls, { passive: true });
+  window.addEventListener("resize", updateScenarioControls);
 
   if (!archive?.startReading?.readingFlows?.length) {
     scenarioView.innerHTML = "<p>읽을 이야기를 불러오지 못했습니다.</p>";

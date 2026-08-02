@@ -279,11 +279,47 @@ const viewerJs = fs.readFileSync(
   path.join(archiveRoot, "05_뷰어", "review.js"),
   "utf8",
 );
+const viewerCss = fs.readFileSync(
+  path.join(archiveRoot, "05_뷰어", "review.css"),
+  "utf8",
+);
 assert.doesNotMatch(
   viewerHtml,
   /assets\/archive-stage\/(?:ren|duran)-cutout\.png/,
   "hero must not contain decorative Ren or Duran portraits",
 );
+for (const requiredCarouselHook of [
+  'id="scenarioPrevious"',
+  'id="scenarioNext"',
+]) {
+  assert.match(
+    viewerHtml,
+    new RegExp(requiredCarouselHook),
+    `missing scenario carousel hook ${requiredCarouselHook}`,
+  );
+}
+assert.match(
+  viewerCss,
+  /\.scenario-list\s*\{[^}]*display:\s*flex;[^}]*overflow-x:\s*auto;[^}]*scroll-snap-type:\s*x\s+mandatory;/s,
+  "scenario list must be a one-row horizontal snap carousel",
+);
+assert.doesNotMatch(
+  viewerCss,
+  /\.scenario-list\s*\{[^}]*grid-template-columns:/s,
+  "scenario list must not fall back to a multi-row grid",
+);
+for (const requiredBehavior of [
+  "function scrollActiveScenarioIntoView",
+  "function revealScenarioDetail",
+  'window.matchMedia("(max-width: 760px)")',
+  "scenarioView.scrollIntoView",
+]) {
+  assert.match(
+    viewerJs,
+    new RegExp(requiredBehavior.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")),
+    `missing scenario carousel behavior ${requiredBehavior}`,
+  );
+}
 for (const requiredHook of [
   'id="readerGuide"',
   'id="readerGuidePortrait"',
